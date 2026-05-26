@@ -19,7 +19,7 @@
 
 1. 浏览器安装 [Tampermonkey](https://www.tampermonkey.net/)
 2. 点此链接自动安装：  
-   [table-exporter.user.js](https://github.com/XMLY321/table-exporter/raw/master/table-exporter.user.js)
+   [table-exporter.user.js](https://cdn.jsdelivr.net/gh/XMLY321/table-exporter@master/table-exporter.user.js)
 
 ### 方式二：浏览器扩展（开发者模式）
 
