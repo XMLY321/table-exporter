@@ -13,6 +13,9 @@
 (function () {
   'use strict';
 
+  // 防止重复注入
+  if (document.getElementById('tus-btn')) return;
+
   // ========== 表格检测与高亮 ==========
   const SELECTED = new Set();
   let updating = false;
@@ -78,6 +81,8 @@
     updating = true;
     document.querySelectorAll('table').forEach((table, i) => {
       if (table.dataset.tusOverlay) return;
+      // 二次确认无重复 badge
+      if (table.querySelector('[data-tus-badge]')) return;
       table.dataset.tusOverlay = '1';
       const cs = getComputedStyle(table);
       if (!cs.position || cs.position === 'static') {
@@ -85,6 +90,7 @@
       }
 
       const badge = document.createElement('div');
+      badge.dataset.tusBadge = '1';
       badge.style.cssText = `
         position:absolute;top:0;left:0;background:#4f46e5;color:#fff;
         font-size:11px;font-family:system-ui,sans-serif;padding:2px 8px;
