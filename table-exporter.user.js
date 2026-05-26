@@ -326,17 +326,4 @@
   attachOverlays();
   panelCtx = createPanel();
   updatePanel();
-
-  const observer = new MutationObserver((mutations) => {
-    const ours = mutations.some(m => {
-      return Array.from(m.addedNodes).some(n =>
-        n.id === 'tus-btn' || n.id === 'tus-drawer' ||
-        (n.dataset && n.dataset.tusOverlay)
-      );
-    });
-    if (ours || updating) return;
-    attachOverlays();
-    updatePanel();
-  });
-  observer.observe(document.body, { childList: true, subtree: true });
 })();
