@@ -15,6 +15,7 @@
 
   // ========== 表格检测与高亮 ==========
   const SELECTED = new Set();
+  let updating = false;
 
   function scanTables() {
     const tables = document.querySelectorAll('table');
@@ -74,6 +75,7 @@
 
   // ========== 表格高亮标签 ==========
   function attachOverlays() {
+    updating = true;
     document.querySelectorAll('table').forEach((table, i) => {
       if (table.dataset.tusOverlay) return;
       table.dataset.tusOverlay = '1';
@@ -123,6 +125,7 @@
 
       table.appendChild(badge);
     });
+    updating = false;
   }
 
   // ========== 浮动面板 UI ==========
@@ -257,7 +260,8 @@
   let panelCtx = null;
 
   function updatePanel() {
-    if (!panelCtx) return;
+    if (!panelCtx || updating) return;
+    updating = true;
     const tables = scanTables();
     const list = document.getElementById('tus-list');
     const empty = document.getElementById('tus-empty');
@@ -314,6 +318,7 @@
         });
       });
     });
+    updating = false;
   }
 
   // ========== 初始化 ==========
@@ -322,7 +327,6 @@
   panelCtx = createPanel();
   updatePanel();
 
-  let updating = false;
   const observer = new MutationObserver((mutations) => {
     const ours = mutations.some(m => {
       return Array.from(m.addedNodes).some(n =>
