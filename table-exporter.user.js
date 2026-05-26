@@ -6,7 +6,7 @@
 // @author       XMLY321
 // @match        *://*/*
 // @match        file:///*
-// @grant        GM_download
+// @run-at      document-end
 // @license      MIT
 // ==/UserScript==
 
@@ -14,11 +14,11 @@
   'use strict';
 
   // 防止重复注入
-  if (document.getElementById('tus-btn')) return;
+  if (window.__tus_loaded) return;
+  window.__tus_loaded = true;
 
   // ========== 表格检测与高亮 ==========
   const SELECTED = new Set();
-  let updating = false;
 
   function scanTables() {
     const tables = document.querySelectorAll('table');
@@ -64,21 +64,19 @@
     const safeName = (document.title || 'export').replace(/[\\/:*?"<>|]/g, '_');
     const filename = safeName + '_' + Date.now() + '.csv';
 
-    if (typeof GM_download === 'function') {
-      GM_download({ url, name: filename, saveAs: false });
-    } else {
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = filename;
-      a.click();
-    }
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
 
     setTimeout(() => URL.revokeObjectURL(url), 10000);
   }
 
   // ========== 表格高亮标签 ==========
   function attachOverlays() {
-    updating = true;
     document.querySelectorAll('table').forEach((table, i) => {
       if (table.dataset.tusOverlay) return;
       // 二次确认无重复 badge
@@ -131,7 +129,6 @@
 
       table.appendChild(badge);
     });
-    updating = false;
   }
 
   // ========== 浮动面板 UI ==========
@@ -266,8 +263,7 @@
   let panelCtx = null;
 
   function updatePanel() {
-    if (!panelCtx || updating) return;
-    updating = true;
+    if (!panelCtx) return;
     const tables = scanTables();
     const list = document.getElementById('tus-list');
     const empty = document.getElementById('tus-empty');
@@ -324,7 +320,6 @@
         });
       });
     });
-    updating = false;
   }
 
   // ========== 初始化 ==========
