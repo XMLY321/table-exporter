@@ -1,68 +1,90 @@
-# 表格导出助手 (Table Exporter)
+# 表格导出助手 / Table Exporter
 
-一个轻量级浏览器扩展，检测网页中的 HTML 表格，一键导出为 CSV 文件。
+检测网页 HTML 表格，一键导出为 CSV 文件。纯本地处理，不收集任何数据。
+
+![screenshot](screenshot.png)
 
 ## 功能
 
-- 自动检测当前网页所有 `<table>` 元素
-- 鼠标悬停高亮，点击标签选中/取消
-- 工具栏弹窗列出所有表格（行数 × 列数）
-- 多选导出，合并为单个 CSV 文件
-- 纯本地处理，不收集任何数据
+- 自动检测网页中所有 `<table>` 元素
+- 表格左上角显示浮动标签，点击选中/取消
+- 右下角浮动按钮，弹出面板列出所有表格
+- 支持多选，合并导出为单个 CSV 文件
+- UTF-8 BOM 编码，Excel / WPS 打开不乱码
+- 纯本地处理，无网络请求，无数据收集
 
-## 安装
+## 快速安装
 
-### Chrome / Edge 开发模式
+### 方式一：Tampermonkey 脚本（推荐）
 
-1. 克隆仓库或下载 ZIP
-2. 打开 `chrome://extensions/`（Edge 用 `edge://extensions/`）
-3. 开启**开发者模式**
-4. 点击**加载已解压的扩展程序**，选择项目文件夹
-5. 完成
+1. 浏览器安装 [Tampermonkey](https://www.tampermonkey.net/)
+2. 点此链接自动安装：  
+   [table-exporter.user.js](https://github.com/XMLY321/table-exporter/raw/master/table-exporter.user.js)
 
-### 从商店安装（即将上线）
+### 方式二：浏览器扩展（开发者模式）
 
-待上架 Chrome Web Store / Edge Add-ons。
+1. 克隆仓库或 [下载 ZIP](https://github.com/XMLY321/table-exporter/archive/refs/heads/master.zip)
+2. 打开 `edge://extensions/` 或 `chrome://extensions/`
+3. 开启 **开发者模式**
+4. 点击 **加载已解压的扩展程序**，选择项目文件夹
+
+### 商店版本
+
+Chrome Web Store / Edge Add-ons 即将上线。
 
 ## 使用
 
 1. 打开任意包含表格的网页
-2. 表格左上角会出现 `📊 导出` 标签
-3. 点击标签选中表格（高亮变绿）
-4. 点击工具栏图标，勾选要导出的表格
-5. 点击**导出选中表格**，CSV 自动下载
+2. 表格左上角出现 `导出` 标签
+3. 点击标签选中（边框变绿，文字变"已选"）
+4. 点击右下角紫色按钮，打开面板
+5. 勾选要导出的表格，点 **导出 CSV**
+6. 文件自动下载
+
+**本地测试：** 用浏览器打开项目中的 [demo.html](demo.html)，包含两个示例表格。
 
 ## 项目结构
 
 ```
 table-exporter/
-├── manifest.json          # 扩展配置 (Manifest V3)
+├── table-exporter.user.js  # Tampermonkey 油猴脚本（推荐安装）
+├── manifest.json           # 浏览器扩展配置 (Manifest V3)
 ├── content/
-│   ├── content.js         # 表格检测、高亮、数据提取
-│   └── content.css        # 高亮样式
+│   ├── content.js          # 扩展版：表格检测、高亮、数据提取
+│   └── content.css         # 扩展版：高亮样式
 ├── popup/
-│   ├── popup.html         # 弹窗界面
-│   ├── popup.css          # 弹窗样式
-│   └── popup.js           # 表格列表、CSV 导出
-└── icons/                 # 扩展图标
-    ├── icon16.png
-    ├── icon48.png
-    └── icon128.png
+│   ├── popup.html          # 扩展版：弹窗界面
+│   ├── popup.css           # 扩展版：弹窗样式
+│   └── popup.js            # 扩展版：表格列表、CSV 导出
+├── icons/                  # 扩展图标 (16/48/128 px)
+├── demo.html               # 本地演示页面
+├── privacy.html            # 隐私政策
+└── screenshot.png          # 截图
 ```
 
 ## 技术栈
 
-纯原生 HTML / CSS / JavaScript，不依赖任何框架或构建工具。
+纯原生 HTML / CSS / JavaScript，零依赖，零构建工具。
 
-- Manifest V3
-- Content Script + Popup 通信
-- CSV 生成（UTF-8 BOM 兼容 Excel）
-- MutationObserver 监听动态加载表格
+- Manifest V3（扩展版）
+- Tampermonkey / Greasemonkey（脚本版）
+- CSV 生成（UTF-8 BOM，Excel 兼容）
+- Shadow DOM 样式隔离
 
 ## 隐私
 
-本扩展**不收集、不存储、不上传**任何数据。详见 [隐私政策](privacy.html)。
+本扩展 **不收集、不存储、不上传** 任何用户数据。详见 [隐私政策](privacy.html)。
+
+权限说明：
+- `activeTab` — 仅在点击扩展图标后读取当前页面表格
+- `downloads` — 仅用于保存 CSV 文件到本地
 
 ## 许可
 
 MIT License
+
+## 链接
+
+- [GitHub 仓库](https://github.com/XMLY321/table-exporter)
+- [问题反馈](https://github.com/XMLY321/table-exporter/issues)
+- [隐私政策](https://xmly321.github.io/table-exporter/privacy.html)
