@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=360">
+<title>表格导出助手</title>
+<link rel="stylesheet" href="popup.css">
+</head>
+<body>
+<div class="header">
+  <h1>📊 表格导出助手</h1>
+  <button id="refreshBtn" class="btn-sm">🔄 刷新</button>
+</div>
+
+<div id="empty" class="empty">当前页面没有检测到表格</div>
+
+<div id="tableList" class="list"></div>
+
+<div class="actions" id="actions" style="display:none">
+  <button id="exportBtn" class="btn-primary">⬇ 导出选中表格 (CSV)</button>
+  <button id="clearBtn" class="btn-sm">清除选择</button>
+</div>
+
+<script src="popup.js"></script>
+</body>
+</html>
