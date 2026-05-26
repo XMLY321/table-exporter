@@ -5,6 +5,7 @@
 // @description  检测网页表格，一键选中导出为 CSV 文件。纯本地处理，不收集任何数据。
 // @author       XMLY321
 // @match        *://*/*
+// @match        file:///*
 // @grant        GM_download
 // @license      MIT
 // ==/UserScript==
@@ -321,7 +322,15 @@
   panelCtx = createPanel();
   updatePanel();
 
-  const observer = new MutationObserver(() => {
+  let updating = false;
+  const observer = new MutationObserver((mutations) => {
+    const ours = mutations.some(m => {
+      return Array.from(m.addedNodes).some(n =>
+        n.id === 'tus-btn' || n.id === 'tus-drawer' ||
+        (n.dataset && n.dataset.tusOverlay)
+      );
+    });
+    if (ours || updating) return;
     attachOverlays();
     updatePanel();
   });
