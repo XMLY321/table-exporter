@@ -125,118 +125,107 @@
   }
 
   // ========== 浮动面板 UI ==========
-  function createPanel() {
-    const panel = document.createElement('div');
-    panel.id = 'tus-panel';
+  function injectStyles() {
+    const style = document.createElement('style');
+    style.textContent = `
+      #tus-btn {
+        all:initial; position:fixed; bottom:24px; right:24px; z-index:2147483647;
+        width:48px; height:48px; border-radius:50%; background:#4f46e5; color:#fff;
+        font-size:20px; cursor:pointer; box-shadow:0 4px 16px rgba(79,70,229,.4);
+        display:flex; align-items:center; justify-content:center; border:none;
+        transition:transform .2s,background .2s; font-family:system-ui,sans-serif;
+      }
+      #tus-btn:hover { background:#4338ca; transform:scale(1.08); }
+      #tus-btn .tus-count {
+        position:absolute; top:-4px; right:-4px; background:#ef4444; color:#fff;
+        font-size:11px; min-width:18px; height:18px; border-radius:9px;
+        display:flex; align-items:center; justify-content:center;
+      }
+      #tus-drawer {
+        all:initial; position:fixed; bottom:84px; right:24px; z-index:2147483647;
+        width:340px; max-height:480px; background:#fff; border-radius:12px;
+        box-shadow:0 8px 32px rgba(0,0,0,.18); display:none; flex-direction:column;
+        font-family:system-ui,-apple-system,sans-serif; font-size:13px; color:#1e293b;
+        overflow:hidden;
+      }
+      #tus-drawer.tus-open { display:flex; }
+      #tus-drawer .tus-header {
+        background:#4f46e5; color:#fff; padding:14px 16px; font-weight:600;
+        font-size:14px; display:flex; justify-content:space-between; align-items:center;
+      }
+      #tus-drawer .tus-header button {
+        background:rgba(255,255,255,.15); border:1px solid rgba(255,255,255,.3);
+        color:#fff; border-radius:4px; padding:4px 10px; font-size:12px; cursor:pointer;
+      }
+      #tus-drawer .tus-header button:hover { background:rgba(255,255,255,.25); }
+      #tus-drawer .tus-empty { padding:32px; text-align:center; color:#94a3b8; }
+      #tus-drawer .tus-list { flex:1; overflow-y:auto; max-height:340px; }
+      #tus-drawer .tus-item {
+        display:flex; align-items:center; gap:10px; padding:10px 16px;
+        border-bottom:1px solid #e2e8f0; cursor:pointer;
+      }
+      #tus-drawer .tus-item:hover { background:#f8fafc; }
+      #tus-drawer .tus-item input { width:16px; height:16px; accent-color:#4f46e5; flex-shrink:0; }
+      #tus-drawer .tus-item .tus-info { flex:1; min-width:0; }
+      #tus-drawer .tus-item .tus-cap {
+        font-weight:600; font-size:12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+      }
+      #tus-drawer .tus-item .tus-meta { font-size:11px; color:#64748b; margin-top:2px; }
+      #tus-drawer .tus-footer {
+        padding:12px 16px; border-top:1px solid #e2e8f0; display:flex; gap:8px;
+      }
+      #tus-drawer .tus-export-btn {
+        flex:1; padding:10px; background:#4f46e5; color:#fff; border:none;
+        border-radius:6px; font-size:13px; font-weight:600; cursor:pointer;
+      }
+      #tus-drawer .tus-export-btn:hover { background:#4338ca; }
+      #tus-drawer .tus-export-btn:disabled { background:#94a3b8; cursor:not-allowed; }
+      #tus-drawer .tus-clear-btn {
+        padding:10px 14px; background:#fff; border:1px solid #e2e8f0;
+        border-radius:6px; font-size:12px; cursor:pointer; color:#64748b;
+      }
+      #tus-drawer .tus-clear-btn:hover { background:#f1f5f9; }
+    `;
+    document.head.appendChild(style);
+  }
 
-    const shadow = panel.attachShadow({ mode: 'open' });
-    shadow.innerHTML = `
-      <style>
-        :host { all: initial; }
-        .btn {
-          position: fixed; bottom: 24px; right: 24px; z-index: 2147483647;
-          width: 48px; height: 48px; border-radius: 50%;
-          background: #4f46e5; color: #fff; border: none;
-          font-size: 20px; cursor: pointer; box-shadow: 0 4px 16px rgba(79,70,229,.4);
-          display: flex; align-items: center; justify-content: center;
-          transition: transform .2s, background .2s;
-        }
-        .btn:hover { background: #4338ca; transform: scale(1.08); }
-        .btn .count {
-          position: absolute; top: -4px; right: -4px;
-          background: #ef4444; color: #fff; font-size: 11px;
-          min-width: 18px; height: 18px; border-radius: 9px;
-          display: flex; align-items: center; justify-content: center;
-          font-family: system-ui, sans-serif;
-        }
-        .drawer {
-          position: fixed; bottom: 84px; right: 24px;
-          width: 340px; max-height: 480px; z-index: 2147483647;
-          background: #fff; border-radius: 12px;
-          box-shadow: 0 8px 32px rgba(0,0,0,.18);
-          display: none; flex-direction: column;
-          font-family: system-ui, -apple-system, sans-serif;
-          font-size: 13px; color: #1e293b;
-          overflow: hidden;
-        }
-        .drawer.open { display: flex; }
-        .header {
-          background: #4f46e5; color: #fff; padding: 14px 16px;
-          font-weight: 600; font-size: 14px;
-          display: flex; justify-content: space-between; align-items: center;
-        }
-        .header button {
-          background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.3);
-          color: #fff; border-radius: 4px; padding: 4px 10px;
-          font-size: 12px; cursor: pointer;
-        }
-        .header button:hover { background: rgba(255,255,255,.25); }
-        .empty { padding: 32px; text-align: center; color: #94a3b8; }
-        .list { flex: 1; overflow-y: auto; max-height: 340px; }
-        .item {
-          display: flex; align-items: center; gap: 10px;
-          padding: 10px 16px; border-bottom: 1px solid #e2e8f0;
-          cursor: pointer;
-        }
-        .item:hover { background: #f8fafc; }
-        .item input { width: 16px; height: 16px; accent-color: #4f46e5; flex-shrink: 0; }
-        .item .info { flex: 1; min-width: 0; }
-        .item .cap {
-          font-weight: 600; font-size: 12px;
-          white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-        }
-        .item .meta { font-size: 11px; color: #64748b; margin-top: 2px; }
-        .footer {
-          padding: 12px 16px; border-top: 1px solid #e2e8f0;
-          display: flex; gap: 8px;
-        }
-        .footer .export-btn {
-          flex: 1; padding: 10px; background: #4f46e5; color: #fff;
-          border: none; border-radius: 6px; font-size: 13px; font-weight: 600;
-          cursor: pointer;
-        }
-        .footer .export-btn:hover { background: #4338ca; }
-        .footer .export-btn:disabled { background: #94a3b8; cursor: not-allowed; }
-        .footer .clear-btn {
-          padding: 10px 14px; background: #fff; border: 1px solid #e2e8f0;
-          border-radius: 6px; font-size: 12px; cursor: pointer; color: #64748b;
-        }
-        .footer .clear-btn:hover { background: #f1f5f9; }
-      </style>
-      <button class="btn" id="tus-toggle">📊<span class="count" id="tus-count" hidden></span></button>
-      <div class="drawer" id="tus-drawer">
-        <div class="header">
-          <span>表格导出助手</span>
-          <button id="tus-refresh">刷新</button>
-        </div>
-        <div class="empty" id="tus-empty">当前页面没有检测到表格</div>
-        <div class="list" id="tus-list"></div>
-        <div class="footer" id="tus-footer" style="display:none">
-          <button class="export-btn" id="tus-export">导出 CSV</button>
-          <button class="clear-btn" id="tus-clear">清除</button>
-        </div>
+  function createPanel() {
+    const btn = document.createElement('button');
+    btn.id = 'tus-btn';
+    btn.innerHTML = '📊<span class="tus-count" id="tus-count" hidden></span>';
+
+    const drawer = document.createElement('div');
+    drawer.id = 'tus-drawer';
+    drawer.innerHTML = `
+      <div class="tus-header">
+        <span>表格导出助手</span>
+        <button id="tus-refresh">刷新</button>
+      </div>
+      <div class="tus-empty" id="tus-empty">当前页面没有检测到表格</div>
+      <div class="tus-list" id="tus-list"></div>
+      <div class="tus-footer" id="tus-footer" style="display:none">
+        <button class="tus-export-btn" id="tus-export">导出 CSV</button>
+        <button class="tus-clear-btn" id="tus-clear">清除</button>
       </div>
     `;
 
-    document.body.appendChild(panel);
+    document.body.appendChild(btn);
+    document.body.appendChild(drawer);
 
-    const toggle = shadow.getElementById('tus-toggle');
-    const drawer = shadow.getElementById('tus-drawer');
-
-    toggle.addEventListener('click', () => {
-      drawer.classList.toggle('open');
-      if (drawer.classList.contains('open')) updatePanel();
+    btn.addEventListener('click', () => {
+      drawer.classList.toggle('tus-open');
+      if (drawer.classList.contains('tus-open')) updatePanel();
     });
 
     document.addEventListener('click', (e) => {
-      if (!panel.contains(e.target)) {
-        drawer.classList.remove('open');
+      if (e.target !== btn && !btn.contains(e.target) && !drawer.contains(e.target)) {
+        drawer.classList.remove('tus-open');
       }
     });
 
-    shadow.getElementById('tus-refresh').addEventListener('click', updatePanel);
+    document.getElementById('tus-refresh').addEventListener('click', updatePanel);
 
-    shadow.getElementById('tus-export').addEventListener('click', () => {
+    document.getElementById('tus-export').addEventListener('click', () => {
       const indices = Array.from(SELECTED);
       if (!indices.length) {
         alert('请先勾选要导出的表格');
@@ -244,17 +233,10 @@
       }
       const tables = getTableData(indices);
       downloadCSV(tables);
-      drawer.classList.remove('open');
+      drawer.classList.remove('tus-open');
     });
 
-    shadow.getElementById('tus-clear').addEventListener('click', () => {
-      document.querySelectorAll('table').forEach((table, i) => {
-        table.style.outline = '';
-        table.style.background = '';
-        const badge = table.querySelector('[data-tus-overlay] + div, div[style*="position:absolute"][style*="4f46e5"]');
-        // Use the first div (badge) fix
-      });
-      // Simpler: just clear and re-attach
+    document.getElementById('tus-clear').addEventListener('click', () => {
       SELECTED.clear();
       document.querySelectorAll('table').forEach(t => {
         t.style.outline = '';
@@ -262,27 +244,24 @@
         t.dataset.tusOverlay = '';
         const badges = t.querySelectorAll('div');
         badges.forEach(b => {
-          if (b.textContent === '已选' || b.textContent === '导出') {
-            b.textContent = '导出';
-          }
+          if (b.textContent === '已选' || b.textContent === '导出') b.textContent = '导出';
         });
       });
       updatePanel();
     });
 
-    return { shadow, toggle: toggle, countBadge: shadow.getElementById('tus-count') };
+    return { btn, drawer, countBadge: document.getElementById('tus-count') };
   }
 
   let panelCtx = null;
 
   function updatePanel() {
     if (!panelCtx) return;
-    const { shadow } = panelCtx;
     const tables = scanTables();
-    const list = shadow.getElementById('tus-list');
-    const empty = shadow.getElementById('tus-empty');
-    const footer = shadow.getElementById('tus-footer');
-    const countBadge = shadow.getElementById('tus-count');
+    const list = document.getElementById('tus-list');
+    const empty = document.getElementById('tus-empty');
+    const footer = document.getElementById('tus-footer');
+    const countBadge = document.getElementById('tus-count');
 
     // Update count badge
     if (tables.length > 0) {
@@ -303,11 +282,11 @@
     footer.style.display = 'flex';
 
     list.innerHTML = tables.map((t, i) => `
-      <label class="item">
+      <label class="tus-item">
         <input type="checkbox" data-idx="${i}" ${SELECTED.has(i) ? 'checked' : ''}>
-        <div class="info">
-          <div class="cap">${t.caption || '表格 #' + (i + 1)}</div>
-          <div class="meta">${t.rows} 行 x ${t.cols} 列 · ${t.firstCell || '—'}</div>
+        <div class="tus-info">
+          <div class="tus-cap">${t.caption || '表格 #' + (i + 1)}</div>
+          <div class="tus-meta">${t.rows} 行 x ${t.cols} 列 · ${t.firstCell || '—'}</div>
         </div>
       </label>
     `).join('');
@@ -337,6 +316,7 @@
   }
 
   // ========== 初始化 ==========
+  injectStyles();
   attachOverlays();
   panelCtx = createPanel();
   updatePanel();
